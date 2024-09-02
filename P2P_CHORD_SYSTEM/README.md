@@ -1,83 +1,79 @@
-# info de la materia: ST0263-1716 Topicos Especiales en Telematica
-#
-# Estudiante(s): Jacome Burbano Juan Sebastian, jsjacomeb@eafit.edu.co
-#                Garcia Salcedo Daniel Alberto, dagarcias@eafit.edu.co 
-#
-# Profesor: Alvaro Enrique Ospina San Juan, aeospinas@eafit.edu.co
-#
-# Reto 1
-#
-# 1. breve descripción de la actividad
-Este proyecto implementa un sistema P2P (peer-to-peer) para la gestión de archivos, donde varios nodos de una red pueden buscar, descargar y subir archivos. El sistema también soporta una cola de mensajes para gestionar peticiones en caso de que los nodos no estén activos.
-## 1.1. Que aspectos cumplió o desarrolló de la actividad propuesta por el profesor (requerimientos funcionales y no funcionales)
-- Implementación de un sistema P2P con múltiples nodos.
-- Funcionalidades de búsqueda, descarga y subida de archivos en la red P2P.
-- Gestión de nodos activos e inactivos con soporte de cola de mensajes.
-- Uso de FastAPI para la creación de microservicios REST.
-- Implementación de servicios gRPC para la comunicación entre nodos.
-- Configuración de colas de mensajes usando RabbitMQ.
-## 1.2. Que aspectos NO cumplió o desarrolló de la actividad propuesta por el profesor (requerimientos funcionales y no funcionales)
-- La implementación del balanceo de carga entre nodos no fue completada.
-- No se implementaron mecanismos avanzados de seguridad para las comunicaciones entre nodos.
-- No se logro realizar el Docker y consigo conectarlo a un AWS Server
+# Sistema P2P con Microservicios para Compartir Archivos
 
-# 2. información general de diseño de alto nivel, arquitectura, patrones, mejores prácticas utilizadas.
-El diseño del sistema sigue una arquitectura basada en microservicios donde cada nodo es responsable de gestionar su propio conjunto de archivos. El sistema utiliza una combinación de REST y gRPC para la comunicación entre nodos. Además, se implementó una cola de mensajes (MOM) con RabbitMQ para gestionar peticiones a nodos inactivos.
+## ST0263: Tópicos Especiales en Telemática, 2024-2
+### Universidad EAFIT
 
-### Patrones utilizados:
+**Estudiantes:** Juan Sebastian Jacome Burbano, Daniel Alberto Garcia Salcedo  
+**Correos Electrónicos:** jsjacomeb@eafit.edu.co, dagarcias@eafit.edu.co  
+**Profesor:** Alvaro Enrique Ospina San Juan, aeospinas@eafit.edu.co
 
-- **Microservicios**: Cada nodo actúa como un servicio independiente.
-- **Message Queue**: Uso de colas para manejar tareas cuando los nodos no están disponibles.
-- **Cliente-Servidor**: Implementación de servidores REST y gRPC en cada nodo.
-  
-# 3. Descripción del ambiente de desarrollo y técnico: lenguaje de programación, librerias, paquetes, etc, con sus numeros de versiones.
-- **Lenguaje de programación**: Python 3.x
-- **Librerías y paquetes**:
+### Descripción del Proyecto
+
+Este proyecto implementa un sistema Peer-to-Peer (P2P) para la distribución de archivos de manera descentralizada, utilizando una arquitectura basada en microservicios. La solución emplea una red P2P estructurada mediante el protocolo Chord y una DHT (Tabla de Hash Distribuida) para la localización de archivos. Los nodos se comunican entre sí usando API REST, gRPC y un Middleware Orientado a Mensajes (MOM) utilizando RabbitMQ.
+
+### Arquitectura del Sistema
+
+El sistema está compuesto por los siguientes elementos:
+
+1. **Nodos P2P:** Cada nodo opera simultáneamente como servidor y cliente, ejecutando microservicios que permiten compartir archivos.
+2. **Portmapper:** Gestiona la lista de nodos presentes en la red, monitoreando su disponibilidad y facilitando la comunicación entre ellos.
+3. **Microservicios:**
+   - **Servicio DHT con gRPC:** Mantiene la estructura de la red P2P y maneja la localización de los archivos.
+   - **Servicio de Indexación:** Proporciona una lista de los archivos disponibles en un nodo específico.
+   - **Servicio de Subida de Archivos (Upload):** Facilita la subida de archivos a un nodo en la red.
+   - **Servicio de Descarga de Archivos (Download):** Permite la descarga de archivos desde un nodo.
+   - **Servicio MOM:** Gestiona la comunicación asíncrona entre los nodos usando RabbitMQ.
+
+### Requisitos
+
+- **Python 3.x** (versión recomendada)
+- **RabbitMQ** (necesario para la gestión MOM)
+- **Paquetes de Python necesarios:** 
   - `FastAPI` (v0.x.x)
   - `Uvicorn` (v0.x.x)
-  - `requests` (v2.x.x)
   - `pika` (v1.x.x) para la integración con RabbitMQ
-  - `multiprocessing` para la ejecución de procesos en paralelo
+  - `requests` (v2.x.x)
+  - `multiprocessing` para el manejo de procesos en paralelo
 
-### Cómo se compila y ejecuta
+### Instalación
 
-1. Clona el repositorio y navega al directorio del proyecto.
-2. Instala las dependencias listadas en `requirements.txt`:
-   ```bash
-   pip install -r requirements.txt
-3. Configura los nodos en el archivo de configuración correspondiente, incluyendo las direcciones IP y los puertos.
-4. Para iniciar los nodos, ejecuta el siguiente comando:
-      ```bash
-       python main.py
-##Detalles técnicos
-- Cada nodo tiene una dirección IP y un puerto específicos configurados en el código.
-- Los nodos se conectan entre sí mediante gRPC y REST.
-- El sistema gestiona automáticamente los nodos inactivos utilizando RabbitMQ para encolar las peticiones que serán procesadas cuando el nodo vuelva a estar activo.
+1. Clona este repositorio en tu máquina local usando el siguiente comando:
+    ```bash
+    git clone https://github.com/jsjacomeb/reto1
+    ```
+2. Navega al directorio donde se encuentra el proyecto:
+    ```bash
+    cd tu_repositorio
+    ```
 
-##Configuración de parámetros del proyecto
-- IP y puertos: Configurados en el código, asegúrate de que no haya conflictos de puertos.
-- Conexión a RabbitMQ: Asegúrate de tener RabbitMQ corriendo en localhost.
-# 4. Descripción del ambiente de EJECUCIÓN (en producción) lenguaje de programación, librerias, paquetes, etc, con sus numeros de versiones.
-- Lenguaje de programación: Python 3.x
-- Librerías y paquetes:
-    - 'FastAPI'
-    - 'Uvicorn'
-    - 'pika'
-    - 'requests'
-##Cómo se lanza el servidor
-Para iniciar los nodos en producción, ejecuta el script principal que inicia los servicios REST, gRPC y MOM en paralelo:
-      ```bash
-       python main.py
-##Mini guía de uso
-1. Buscar y descargar un archivo:
-    - Ejecuta la opción 1 en el menú interactivo del cliente, ingresa el nombre del archivo y sigue las instrucciones.
-2. Subir un archivo:
-    - Ejecuta la opción 2 en el menú, selecciona el nodo de destino y sigue las instrucciones.
-3. Ver todos los nodos disponibles:
-    - Ejecuta la opción 3 para listar los nodos activos e inactivos.
-# 5. otra información que considere relevante para esta actividad.
-Es importante asegurarse de que todos los nodos estén correctamente configurados y que RabbitMQ esté corriendo antes de ejecutar el sistema.
+### Uso
 
-# Referencias
-Documentación de FastAPI: https://fastapi.tiangolo.com/
-RabbitMQ en Python con pika: https://pika.readthedocs.io/
+1. Configura las direcciones IP y puertos de los nodos en el archivo de configuración.
+2. Inicia el servidor principal ejecutando el siguiente comando:
+
+    ```bash
+    python main.py
+    ```
+
+    Luego, abre una nueva terminal y ejecuta el siguiente comando para iniciar el portmapper:
+
+    ```bash
+    uvicorn portmapper:app --host 127.0.0.1 --port 8000
+    ```
+
+    Finalmente, abre otra terminal y ejecuta el cliente con el comando:
+
+    ```bash
+    python client.py
+    ```
+
+3. Utiliza el menú interactivo para buscar, subir y descargar archivos entre los nodos de la red.
+
+### Información Adicional
+
+- Asegúrate de que RabbitMQ esté en funcionamiento antes de arrancar el sistema para garantizar que el servicio de comunicación asíncrona funcione correctamente.
+- Configura correctamente las IPs y los puertos en los archivos de configuración para evitar conflictos y asegurar una comunicación efectiva entre los nodos.
+
+### Referencias
+
+- [Guía de uso de RabbitMQ con pika en Python](https://pika.readthedocs.io/)
