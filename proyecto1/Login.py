@@ -1,5 +1,6 @@
 import socket
 
+
 def create_socket():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     return client_socket
@@ -28,9 +29,27 @@ def login_user(client_socket):
             elif command.startswith("put"):
                 file_name = input("Enter the file name: ")
                 client_socket.send(("put " + file_name).encode())
+
             elif command.startswith("get"):
                 file_name = input("Enter the file name: ")
                 client_socket.send(("get " + file_name).encode())
+                response = client_socket.recv(1024).decode()
+                if response == "File does not exist.":
+                    print(response)
+                else:
+                    save_location = input("Enter the save location: ")
+                    if not save_location.endswith('\\') and not save_location.endswith('/'):
+                        save_location += '\\'
+                    save_location += file_name
+                    with open(save_location, 'wb') as file:
+                        while True:
+                            content = client_socket.recv(1024)
+                            if content == b'END':  # Check if the signal has been received
+                                break
+                            file.write(content)
+                    print("File downloaded successfully.")
+                continue
+
             elif command.startswith("mkdir"):
                 folder_name = input("Enter the folder name: ")
                 client_socket.send(("mkdir " + folder_name).encode())
@@ -52,7 +71,7 @@ def login_user(client_socket):
 
 def main():
     client_socket = create_socket()
-    client_socket.connect(("ip", 54321))
+    client_socket.connect(("192.168.1.3", 54321))
 
     while True:
         print("Options:")
